@@ -60,9 +60,14 @@ handle_extension() {
         # PDF
         pdf)
             # Preview as text conversion
-            pdftotext -l 10 -nopgbrk -q -- "${FILE_PATH}" - && exit 5
-            exiftool "${FILE_PATH}" && exit 5
-            exit 1;;
+            if [[ "${PV_IMAGE_ENABLED}" == 'True' ]]; then
+                pdftoppm -jpeg -singlefile ${FILE_PATH} ${IMAGE_CACHE_PATH%\.*} && exit 6
+                exit 1
+            else
+                pdftotext -l 10 -nopgbrk -q -- "${FILE_PATH}" - && exit 5
+                exiftool "${FILE_PATH}" && exit 5
+                exit 1
+            fi;;
 
         # BitTorrent
         torrent)
@@ -102,8 +107,8 @@ handle_image() {
         # Video
         video/*)
         #     # Thumbnail
-             ffmpegthumbnailer -i "${FILE_PATH}" -o "${IMAGE_CACHE_PATH}" -s 0 && exit 6
-             exit 1;;
+            ffmpegthumbnailer -i "${FILE_PATH}" -o "${IMAGE_CACHE_PATH}" -s 0 && exit 6
+            exit 1;;
     esac
 }
 
